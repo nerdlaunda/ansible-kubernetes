@@ -1,0 +1,4 @@
+---
+ 
+master_ssh_key_path: "/tmp/ssh-keys/master"
+worker_ssh_key_path: "/tmp/ssh-keys/worker"

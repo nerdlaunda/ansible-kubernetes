@@ -1,0 +1,6 @@
+---
+
+- name: Get hosts ready
+  var_files:
+    - "{{ playbook_path + '/vars.yaml' }}"
+

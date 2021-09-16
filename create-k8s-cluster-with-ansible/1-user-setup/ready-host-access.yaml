@@ -1,0 +1,83 @@
+---
+- name: Create ssh keys
+  hosts: localhost
+  vars_files:
+  - vars.yaml
+  
+  tasks:
+  - name: Create ssh keys for master nodes
+    community.crypto.openssh_keypair:
+      path: "{{ master_ssh_key_path }}"
+      size: 2048  
+    register: master_key
+  - name: Create ssh keys for worker nodes    
+    community.crypto.openssh_keypair:
+      path: "{{ worker_ssh_key_path }}"
+      size: 2048
+    register: worker_key
+  - debug:
+      var: "{{ item }}"
+    loop:
+    - worker_key
+    - master_key
+
+- name: Configure master hosts for ansible users
+  hosts: masters
+  tasks:
+  - name: Ensure existance of sudo group
+    group:
+      name: sudo
+      state: present
+  
+  - name: Create user ansible for master nodes
+    become: true
+    user: 
+      name: ansible
+      shell: /bin/bash
+      createhome: true
+      state: present
+      group: sudo
+  
+  - name: Grant NOPASSWD
+    become: true
+    lineinfile:
+      path: /etc/sudoers
+      insertafter: EOF
+      validate: /usr/sbin/visudo -cf %s
+      line: "ansible ALL=(ALL) NOPASSWD: ALL"
+
+  - name: Copy master private key to master nodes
+    become: true
+    authorized_key:
+      user: ansible
+      key: "{{ lookup('file', master_ssh_key_path + '.pub') }}"
+- name: Configure worker hosts for ansible users
+  hosts: workers
+  tasks:
+  - name: Ensure existance of sudo group
+    group:
+      name: sudo
+      state: present
+  
+  - name: Create user ansible for worker nodes
+    become: true
+    user: 
+      name: ansible
+      shell: /bin/bash
+      createhome: true
+      state: present
+      group: sudo
+
+  - name: Grant NOPASSWD
+    become: true
+    lineinfile:
+      path: /etc/sudoers
+      insertafter: EOF
+      validate: /usr/sbin/visudo -cf %s
+      line: "ansible ALL=(ALL) NOPASSWD: ALL"
+
+  - name: Copy master private key to worker nodes
+    become: true
+    authorized_key:      
+      key: "{{ lookup('file', worker_ssh_key_path + '.pub') }}"
+      user: ansible
