@@ -4,6 +4,7 @@
 dry_run=1
 key_path=/home/user/ansible-kubernetes/create-k8s-cluster-with-ansible/1-user-setup/
 
+
 # Donot change anything below unless you know what is what
 opr=""
 if [ $dry_run -eq 1 ] 
