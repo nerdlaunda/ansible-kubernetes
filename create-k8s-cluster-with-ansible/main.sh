@@ -1,8 +1,10 @@
 #! /bin/bash
 # set dry_run to 1 to enable check, and 0 to execute the playbooks
+# Set below variables below
 dry_run=1
 key_path=/home/user/ansible-kubernetes/create-k8s-cluster-with-ansible/1-user-setup/
 
+# Donot change anything below unless you know what is what
 opr=""
 if [ $dry_run -eq 1 ] 
 	then
