@@ -1,6 +1,7 @@
 ---
-
-- name: Get hosts ready
-  var_files:
-    - "{{ playbook_path + '/vars.yaml' }}"
-
+- name: Create and configure users
+  hosts: localhost
+  tasks:
+  - debug:
+      msg: test 
+- import_playbook: 'ready-host-access.yaml'
